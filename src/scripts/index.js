@@ -1,3 +1,6 @@
+import '../pages/index.css';
+import { initialCards } from './cards.js';
+
 // @todo: Темплейт карточки
 const cardTemplate = document.querySelector('#card-template').content;
 
@@ -21,7 +24,7 @@ function creatureCard(objectCards, deleteCard) {
   return cardElement;
 }
 
-// @todo: Функция удаления карточкиё
+// @todo: Функция удаления карточки
 function deleteCard(event) {
   event.target.closest('.card').remove();
 }
@@ -30,3 +33,27 @@ function deleteCard(event) {
 initialCards.forEach(function (item) {
   listCards.append(creatureCard(item, deleteCard));
 });
+
+
+
+
+
+
+const Chart = (function() {   
+
+  const data = [];
+
+    return {
+        render: function (data) { /* ... */ },
+        setData: function (data) { /* ... */ }
+    };
+
+}()); // IIFE возвращает объект
+
+console.log(Chart.render(
+  [
+    [0,12], 
+    [1,22], 
+    [3,18]
+  ]
+)); 
