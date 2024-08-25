@@ -1,9 +1,11 @@
 import '../pages/index.css';
 import { initialCards } from './cards.js';
-import { openModal, deleteClassOpened, closeModal } from './modal.js';
-import { cardsContainer, createCard, interactionCards } from './card.js';
+import { openModal, closeModal } from './modal.js';
+import { createCard, deleteAndLikeCard } from './card.js';
 
 // DOM узлы
+const cardsContainer = document.querySelector('.places__list');
+const popups = document.querySelectorAll('.popup');
 const popupEdit = document.querySelector('.popup_type_edit');
 const popupNewCard = document.querySelector('.popup_type_new-card');
 const buttonEdit = document.querySelector('.profile__edit-button');
@@ -18,9 +20,8 @@ const profileDescription = document.querySelector('.profile__description');
 
 // Вывести карточки на страницу
 initialCards.forEach(function (item) {
-  cardsContainer.append(createCard(item, interactionCards));
+  cardsContainer.append(createCard(item, deleteAndLikeCard, openModalImage));  
 });
-
 
 // открыли редактирование
 buttonEdit.addEventListener('click', function () {
@@ -35,21 +36,35 @@ buttonAdd.addEventListener('click', function () {
   formAdd.reset();
 });
 
-// закрыли попап
-document.addEventListener('click', closeModal);
 
+// закрыли по крестику
+popups.forEach((popup) => {
+  const closeButton = popup.querySelector('.popup__close')
+  closeButton.addEventListener('click', () => {
+     closeModal(popup);
+  });
+});
 
-// Обработчик «отправки» формы
-function handleFormSubmit(evt) {
+// закрыли по оверлей
+popups.forEach((popup) => {
+  popup.addEventListener('mousedown', (evt) => {
+    if (evt.target.classList.contains('popup')) {
+      closeModal(popup);
+    }
+  });
+}); 
+
+// Обработчик редактирования профиля
+function handleProfileFormSubmit(evt) {
   evt.preventDefault();  
   
   profileTitle.textContent = nameInput.value; 
   profileDescription.textContent = jobInput.value;
   
-  deleteClassOpened();  
+  closeModal(popupEdit);
 }
 
-formElement.addEventListener('submit', handleFormSubmit);
+formElement.addEventListener('submit', handleProfileFormSubmit);
 
 
 // Обработчик добавления карточки
@@ -63,11 +78,21 @@ function addCard(evt) {
   objectCards.name = placeNameInput.value;
   objectCards.link = linkInput.value;    
 
-  createCard(objectCards, interactionCards);  
+  cardsContainer.prepend(createCard(objectCards, deleteAndLikeCard, openModalImage));  
   
-  deleteClassOpened();  
+  closeModal(popupNewCard);
 
 }
 
 formAdd.addEventListener('submit', addCard);
 
+
+  // открытие попапа картинок
+function openModalImage(evt) {
+  openModal(document.querySelector('.popup_type_image'));  
+ 
+  const imagePopup = document.querySelector('.popup__image');
+  const popupCaption = document.querySelector('.popup__caption');
+  imagePopup.src = evt.target.src;
+  popupCaption.textContent = evt.target.closest('.card').querySelector('.card__title').textContent;
+}

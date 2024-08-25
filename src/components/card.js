@@ -1,10 +1,7 @@
-import { openModal } from './modal.js';
-
 const cardTemplate = document.querySelector('#card-template').content;
-export const cardsContainer = document.querySelector('.places__list');
 
 // Функция создания карточки
-export function createCard(objectCards, interactionCards) {
+export function createCard(objectCards, deleteAndLikeCard, openModalImage) {
   const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
   const nameCard = cardElement.querySelector('.card__title');
   const imageCard = cardElement.querySelector('.card__image');
@@ -15,32 +12,15 @@ export function createCard(objectCards, interactionCards) {
   imageCard.src = objectCards.link;
   imageCard.alt = objectCards.name;
 
-  imageCard.addEventListener('click', interactionCards.openModalImage);
-  buttonDelete.addEventListener('click', interactionCards.deleteCard);
-  buttonLike.addEventListener('click', interactionCards.likeItCard);
-
-  cardsContainer.prepend(cardElement);
+  imageCard.addEventListener('click', openModalImage);
+  buttonDelete.addEventListener('click', deleteAndLikeCard.deleteCard);
+  buttonLike.addEventListener('click', deleteAndLikeCard.likeItCard);
 
   return cardElement;
 }
 
-// перенос картинки и подписи в попап
-function assignContentToImagePopup (evt) {  
-  const imagePopup = document.querySelector('.popup__image');
-  const popupCaption = document.querySelector('.popup__caption');
-
-  imagePopup.src = evt.target.src;
-  popupCaption.textContent = evt.target.closest('.card').querySelector('.card__title').textContent;
-}
-
 // объект функций взаимодействия с карточками
-export const interactionCards = {
-
-  // открытие попапа картинок
-  openModalImage: function openModalImage(evt) {
-    openModal(document.querySelector('.popup_type_image'));
-    assignContentToImagePopup(evt);
-  },
+export const deleteAndLikeCard = {
 
   // Функция удаления карточки
   deleteCard: function deleteCard(evt) {
