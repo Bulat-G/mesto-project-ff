@@ -12,7 +12,9 @@ export function createCard(objectCards, deleteAndLikeCard, openModalImage) {
   imageCard.src = objectCards.link;
   imageCard.alt = objectCards.name;
 
-  imageCard.addEventListener('click', openModalImage);
+  imageCard.addEventListener('click', function() {
+    openModalImage(nameCard, imageCard);
+  });
   buttonDelete.addEventListener('click', deleteAndLikeCard.deleteCard);
   buttonLike.addEventListener('click', deleteAndLikeCard.likeItCard);
 

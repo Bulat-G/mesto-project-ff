@@ -88,11 +88,11 @@ formAdd.addEventListener('submit', addCard);
 
 
   // открытие попапа картинок
-function openModalImage(evt) {
+function openModalImage(name, link) {
   openModal(document.querySelector('.popup_type_image'));  
  
   const imagePopup = document.querySelector('.popup__image');
   const popupCaption = document.querySelector('.popup__caption');
-  imagePopup.src = evt.target.src;
-  popupCaption.textContent = evt.target.closest('.card').querySelector('.card__title').textContent;
+  imagePopup.src = link.src;
+  popupCaption.textContent = name.textContent;
 }
