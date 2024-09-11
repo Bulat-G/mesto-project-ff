@@ -2,6 +2,7 @@ import '../pages/index.css';
 import { initialCards } from './cards.js';
 import { openModal, closeModal } from './modal.js';
 import { createCard, deleteAndLikeCard } from './card.js';
+import { enableValidation, clearValidation } from './validation.js';
 
 // DOM узлы
 const cardsContainer = document.querySelector('.places__list');
@@ -11,9 +12,9 @@ const popupNewCard = document.querySelector('.popup_type_new-card');
 const buttonEdit = document.querySelector('.profile__edit-button');
 const buttonAdd = document.querySelector('.profile__add-button');
 
-const formElement = document.forms['edit-profile'];
-const nameInput = formElement.elements['name'];
-const jobInput = formElement.elements['description'];
+const formEdit = document.forms['edit-profile'];
+const nameInput = formEdit.elements['name'];
+const jobInput = formEdit.elements['description'];
 
 const formAdd = document.forms['new-place'];
 const placeNameInput = formAdd.elements['place-name'];
@@ -21,6 +22,16 @@ const linkInput = formAdd.elements['link'];
 
 const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
+
+
+const validationConfig = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible'
+}
 
 // Вывести карточки на страницу
 initialCards.forEach(function (item) {
@@ -32,14 +43,15 @@ buttonEdit.addEventListener('click', function () {
   openModal(popupEdit);
   nameInput.value = profileTitle.textContent;
   jobInput.value = profileDescription.textContent;
+  clearValidation (formEdit, validationConfig); //очищаем сообщения об ошибке при открытии
 });
 
 // открыли добавление
 buttonAdd.addEventListener('click', function () {
   openModal(popupNewCard);
   formAdd.reset();
+  clearValidation (formAdd, validationConfig); //очищаем сообщения об ошибке при открытии
 });
-
 
 // закрыли по крестику
 popups.forEach((popup) => {
@@ -68,15 +80,12 @@ function handleProfileFormSubmit(evt) {
   closeModal(popupEdit);
 }
 
-formElement.addEventListener('submit', handleProfileFormSubmit);
+formEdit.addEventListener('submit', handleProfileFormSubmit);
 
 
 // Обработчик добавления карточки
 function addCard(evt) {
   evt.preventDefault();  
-  
-  // const placeNameInput = formAdd.elements['place-name'];
-  // const linkInput = formAdd.elements['link'];
   const objectCards = {};
 
   objectCards.name = placeNameInput.value;
@@ -90,7 +99,6 @@ function addCard(evt) {
 
 formAdd.addEventListener('submit', addCard);
 
-
   // открытие попапа картинок
 function openModalImage(name, link) {
   openModal(document.querySelector('.popup_type_image'));  
@@ -101,79 +109,24 @@ function openModalImage(name, link) {
   popupCaption.textContent = name.textContent;
 }
 
-// --------------------------
-
-// показать ошибку
-function showInputError(formElement, inputElement, errorMessage) {
-  const inputError = formElement.querySelector(`.${inputElement.id}-error`);
-  inputElement.classList.add('popup__input_type_error');
-  inputError.classList.add('popup__input-error_active');
-  inputError.textContent = errorMessage;
-} 
-
-// скрыть ошибку
-function hideInputError(formElement, inputElement) {  
-  const inputError = formElement.querySelector(`.${inputElement.id}-error`);
-  inputElement.classList.remove('popup__input_type_error');
-  inputError.classList.remove('popup__input-error_active');
-  inputError.textContent = '';
-} 
+enableValidation(validationConfig);
 
 
-const regexInputText = /[а-яёa-z\s\-]/gi;
+// ----------------------------------------------------
 
-// проверяем валидность поля ввода
-function isValid(formElement, inputElement) {
-  if (!inputElement.validity.valid && !regexInputText.test(inputElement.value)) {
-    showInputError(formElement, inputElement, inputElement.dataset.errorMessage);
-  } else if (!inputElement.validity.valid) {
-    showInputError(formElement, inputElement, inputElement.validationMessage);
-  } else {
-    hideInputError(formElement, inputElement);
-  }
-};
+// function fetchReq() {
+//   return fetch('https://nomoreparties.co/v1/wff-cohort-22/cards', {
+//     headers: {
+//       authorization: '9be71888-776c-4522-b74c-ee78d127beb2'
+//     }
+//   })
+//     .then(res => res.json())
+//     .then((result) => {
+//       console.log(result);
+//       result.forEach((item) {
 
-// проверяем наличие невалидного поля
-function hasInvalidInput(inputList) {
-  return inputList.some((inputElement) => {
-    return !inputElement.validity.valid
-  })
-}
+//       }) 
+//     }); 
+// }
 
-// переключаем активность кнопки 
-function toggleButtonState(inputList, buttonElement) {
-  if (hasInvalidInput(inputList)) {
-    buttonElement.disabled = true;
-    buttonElement.classList.add('popup__button_inactive');
-  } else {
-    buttonElement.disabled = false;
-    buttonElement.classList.remove('popup__button_inactive');
-  }
-}
-
-function setEventListener(formElement) {  
-  const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
-  const buttonElement = formElement.querySelector('.popup__button');
-  
-  toggleButtonState(inputList, buttonElement);
-
-  inputList.forEach((inputElement) => {      
-    inputElement.addEventListener('input', () => {
-      isValid(formElement, inputElement);
-      toggleButtonState(inputList, buttonElement);
-    }); 
-  })
-}
-
-
-function enableValidation() {
-  const formList = Array.from(document.querySelectorAll('.popup__form'));
-
-  formList.forEach((formElement) => {
-    setEventListener(formElement);
-  })
-}
-
-enableValidation();
-
-
+// fetchReq();
