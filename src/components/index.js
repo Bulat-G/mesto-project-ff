@@ -3,7 +3,7 @@ import { cardsContainer, popups, popupEdit, popupNewCard, popupChangeAvatar, but
 import { openModal, closeModal } from './modal.js';
 import { createCard, deleteAndLikeCard } from './card.js';
 import { enableValidation, clearValidation } from './validation.js';
-import { getUserInfo, getInitialCards, editProfile, postAddCard, deleteCardServer, addLikeServer, deleteLikeServer, changeAvatarToServer, checkLinkAvatar} from './api.js';
+import { getUserInfo, getInitialCards, editProfile, postAddCard, deleteCardServer, addLikeServer, deleteLikeServer, changeAvatarToServer} from './api.js';
 
 
 deleteAndLikeCard.deleteCardServer = deleteCardServer;
@@ -117,14 +117,11 @@ formAdd.addEventListener('submit', (evt) => {
   addCard(evt);
 }); 
 
-
 // смена аватарки
 function changeAvatar(evt) {
   evt.preventDefault(); 
   renderLoading(evt, true);
   const link = inputChangeAvatar.value; 
-
-  checkLinkAvatar(link);
   
   changeAvatarToServer(link)    
     .then((data) => {
@@ -150,9 +147,7 @@ formChangeAvatar.addEventListener('submit', (evt) => {
 enableValidation(validationConfig);
 
 Promise.all([getUserInfo(), getInitialCards()])
-  .then(([getUserInfo, getInitialCards]) => {
-    console.log([getUserInfo, getInitialCards]);
-   
+  .then(([getUserInfo, getInitialCards]) => {   
     document.querySelector('.profile__image').style.backgroundImage = `url(${getUserInfo.avatar})`;
     document.querySelector('.profile__title').textContent = getUserInfo.name;
     document.querySelector('.profile__description').textContent = getUserInfo.about;

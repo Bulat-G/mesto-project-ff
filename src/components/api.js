@@ -13,7 +13,6 @@ function checkResponse(res) {
   return Promise.reject(res.status);  
 }
 
-
 // получить инфо пользователя
 export function getUserInfo() {
   return fetch(`${config.baseUrl}/users/me`, {
@@ -66,7 +65,6 @@ export function postAddCard(dataCard) {
   .then(res => checkResponse(res))
 }
 
-
 // удаление карточки с сервера
 export function deleteCardServer (cardId) {
   fetch (`${config.baseUrl}/cards/${cardId}`, {
@@ -102,7 +100,6 @@ export function deleteLikeServer(cardId) {
   .then(res => checkResponse(res))
 }
 
-
 // смена аватарки на сервере
 export function changeAvatarToServer(link) {
   return fetch (`${config.baseUrl}/users/me/avatar`, {
@@ -116,32 +113,6 @@ export function changeAvatarToServer(link) {
     })
   })
   .then(res => checkResponse(res))
-  // .then(checkLinkAvatar)
-  // .then((res) => {
-  //   console.log(res)
-  //   checkLinkAvatar(res.url)
-  // })
 }
 
 
-// проверка ссылки аватарки
-export function checkLinkAvatar(url) {
-  return fetch (`${url}`, {
-    method: 'HEAD',
-    headers: {
-      'Content-Type': config.headers['Content-Type']
-    }
-  })
-  // .then(res => res.json())
-  
-  .then((res) => {
-    // if (res.ok && res.headers.get('Content-Type').contains('image/jpeg; charset=UTF-8')) {
-    //   return res.json()
-    // }
-    // return Promise.reject(res.status); 
-    console.log(res.headers.get('content-type'))
-  })
-  // .catch((err) => {
-  //   console.log(`ошибка ${err}`)
-  // })
-}
