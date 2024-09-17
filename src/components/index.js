@@ -1,5 +1,5 @@
 import '../pages/index.css';
-import { cardsContainer, popups, popupEdit, popupNewCard, popupChangeAvatar, buttonEdit, buttonAdd, buttonChangeAvatar, formEdit, nameInput, jobInput, formAdd, placeNameInput, imageLinkInput, formChangeAvatar, inputChangeAvatar, profileInfo, validationConfig } from './constants.js';
+import { cardsContainer, popups, popupEdit, popupNewCard, popupChangeAvatar, buttonEdit, buttonAdd, buttonChangeAvatar, formEdit, nameInput, jobInput, formAdd, placeNameInput, imageLinkInput, formChangeAvatar, inputChangeAvatar,  validationConfig } from './constants.js';
 import { openModal, closeModal } from './modal.js';
 import { createCard, deleteAndLikeCard } from './card.js';
 import { enableValidation, clearValidation } from './validation.js';
@@ -13,10 +13,11 @@ deleteAndLikeCard.deleteLikeServer = deleteLikeServer;
 // открыли редактирование
 buttonEdit.addEventListener('click', () => {
   openModal(popupEdit);
-  nameInput.value = profileInfo.title.textContent;
-  jobInput.value = profileInfo.description.textContent;
+  nameInput.value = document.querySelector('.profile__title').textContent;
+  jobInput.value = document.querySelector('.profile__description').textContent;
   clearValidation (formEdit, validationConfig); //очищаем сообщения об ошибке при открытии
 });
+
 
 // открыли добавление
 buttonAdd.addEventListener('click', () => {
@@ -57,11 +58,8 @@ popups.forEach((popup) => {
 
 // загрузка рендеринга
 function renderLoading(evt, isLoading) {
-  if(isLoading) {
-    evt.target.querySelector(validationConfig.submitButtonSelector).textContent = 'Сохранение...'
-  } else {
-    evt.target.querySelector(validationConfig.submitButtonSelector).textContent = 'Сохранить'
-  }
+  evt.target.querySelector(validationConfig.submitButtonSelector).textContent = 
+  isLoading ? 'Сохранение...' : 'Сохранить'
 }
 
 // Обработчик редактирования профиля
@@ -69,13 +67,15 @@ function handleProfileFormSubmit(evt) {
   evt.preventDefault();    
   renderLoading(evt, true);
 
-  profileInfo.title.textContent = nameInput.value; 
-  profileInfo.description.textContent = jobInput.value;
+  const dataProfile = { 
+    title: nameInput.value, 
+    description: jobInput.value
+  }
 
-  editProfile(profileInfo)
+  editProfile(dataProfile)
     .then((data) => {
-      profileInfo.title.textContent = data.name; 
-      profileInfo.description.textContent = data.about;
+      document.querySelector('.profile__title').textContent = data.name; 
+      document.querySelector('.profile__description').textContent = data.about;
     })
     .catch((err) => {
       console.log(`Ошибка редактирования профиля ${err}` )
@@ -89,17 +89,20 @@ function handleProfileFormSubmit(evt) {
 
 formEdit.addEventListener('submit', handleProfileFormSubmit);  
 
+let currentUserInfo;
+
 // Обработчик добавления карточки
 function addCard(evt) {
   evt.preventDefault();  
   renderLoading(evt, true);
-  const dataCard = {};
-  dataCard.name = placeNameInput.value;
-  dataCard.link = imageLinkInput.value;
+  const dataCard = {
+    name: placeNameInput.value,
+    link: imageLinkInput.value
+  };
 
   postAddCard(dataCard)
     .then((data) => {
-      cardsContainer.prepend(createCard(getUserInfo, data, deleteAndLikeCard, openModalImage));      
+      cardsContainer.prepend(createCard(currentUserInfo, data, deleteAndLikeCard, openModalImage));      
       formAdd.reset(); // очищаем форму после закрытия без отправки данных
       clearValidation (formAdd, validationConfig); //очищаем сообщения об ошибке при открытии
     })  
@@ -116,6 +119,7 @@ function addCard(evt) {
 formAdd.addEventListener('submit', (evt) => {
   addCard(evt);
 }); 
+
 
 // смена аватарки
 function changeAvatar(evt) {
@@ -147,23 +151,19 @@ formChangeAvatar.addEventListener('submit', (evt) => {
 enableValidation(validationConfig);
 
 Promise.all([getUserInfo(), getInitialCards()])
-  .then(([getUserInfo, getInitialCards]) => {   
-    document.querySelector('.profile__image').style.backgroundImage = `url(${getUserInfo.avatar})`;
-    document.querySelector('.profile__title').textContent = getUserInfo.name;
-    document.querySelector('.profile__description').textContent = getUserInfo.about;
+  .then(([userInfo, getInitialCards]) => {  
+    currentUserInfo = userInfo; 
+    document.querySelector('.profile__image').style.backgroundImage = `url(${userInfo.avatar})`;
+    document.querySelector('.profile__title').textContent = userInfo.name;
+    document.querySelector('.profile__description').textContent = userInfo.about;
     
     getInitialCards.forEach((dataCard) => {
-      cardsContainer.append(createCard(getUserInfo, dataCard, deleteAndLikeCard, openModalImage));   
-    })    
-    
+      cardsContainer.append(createCard(userInfo, dataCard, deleteAndLikeCard, openModalImage));   
+    })
   })
   .catch((err) => {
     console.log(err);
   })
-  
-
-
-
 
 
 

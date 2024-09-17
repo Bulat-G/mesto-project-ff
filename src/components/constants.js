@@ -18,11 +18,6 @@ export const imageLinkInput = formAdd.elements['link'];
 export const formChangeAvatar = document.forms['change-avatar'];
 export const inputChangeAvatar = formChangeAvatar.elements['link'];
 
-export const profileInfo = {};
-profileInfo.title = document.querySelector('.profile__title');
-profileInfo.description = document.querySelector('.profile__description');
-
-
 export const validationConfig = {
   formSelector: '.popup__form',
   inputSelector: '.popup__input',
@@ -30,4 +25,4 @@ export const validationConfig = {
   inactiveButtonClass: 'popup__button_disabled',
   inputErrorClass: 'popup__input_type_error',
   errorClass: 'popup__error_visible'
-}
+};

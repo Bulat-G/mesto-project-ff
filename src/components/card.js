@@ -10,16 +10,16 @@ export const deleteAndLikeCard = {
 
   // функция лайка 
   likeItCard: function likeItCard (evt, likeScore, dataCard, deleteAndLikeCard) {
-    evt.target.classList.toggle('card__like-button_is-active');
-
-    
-    if(evt.target.classList.contains('card__like-button_is-active')) {
+    if(!evt.target.classList.contains('card__like-button_is-active')) {
       deleteAndLikeCard.addLikeServer(dataCard._id)
         .then((data) => {
           likeScore.textContent = data.likes.length;
         })
         .catch((err) => {
           console.log(err);
+        })
+        .finally(() => {
+          evt.target.classList.toggle('card__like-button_is-active');
         })
     } else {
       deleteAndLikeCard.deleteLikeServer(dataCard._id) 
@@ -28,6 +28,9 @@ export const deleteAndLikeCard = {
         })  
         .catch((err) => {
           console.log(err);
+        })
+        .finally(() => {
+          evt.target.classList.toggle('card__like-button_is-active');
         })    
     }
   }
@@ -53,12 +56,6 @@ export function createCard(getUserInfo, dataCard, deleteAndLikeCard, openModalIm
     openModalImage(nameCard, imageCard);
   });
 
-  // удаление карточки
-  buttonDelete.addEventListener('click', (evt) => {
-    deleteAndLikeCard.deleteCard(evt);
-    deleteAndLikeCard.deleteCardServer(dataCard._id);
-  });
-
   // лайк карточки
   buttonLike.addEventListener('click', (evt) => {
     deleteAndLikeCard.likeItCard(evt, likeScore, dataCard, deleteAndLikeCard);
@@ -67,16 +64,23 @@ export function createCard(getUserInfo, dataCard, deleteAndLikeCard, openModalIm
   // убирает кнопку удаления карточек добавленных другими пользователями
   if (getUserInfo._id !== dataCard.owner._id) {
     buttonDelete.style.display = 'none';  
+  } else {
+    // удаление карточки
+    buttonDelete.addEventListener('click', (evt) => {
+      deleteAndLikeCard.deleteCardServer(dataCard._id)
+        .then(() => {
+          deleteAndLikeCard.deleteCard(evt)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    });
   }
 
   // закрашивает лайк если он поставлен мной
-  dataCard.likes.forEach((likeCard) => {
-    if(getUserInfo._id === likeCard._id) {
-      buttonLike.classList.add('card__like-button_is-active');
-    } else {
-      buttonLike.classList.remove('card__like-button_is-active');
-    }
-  });
+  if(dataCard.likes.some(likeCard => getUserInfo._id === likeCard._id)){ 
+    buttonLike.classList.add("card__like-button_is-active"); 
+  }
 
   
   return cardElement;

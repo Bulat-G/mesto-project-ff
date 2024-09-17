@@ -34,7 +34,7 @@ export function getInitialCards() {
 }
 
 // обновление на сервере инфо пользователя
-export function editProfile(profileInfo) {
+export function editProfile(dataProfile) {
   return fetch (`${config.baseUrl}/users/me`, {
     method: 'PATCH',
     headers: {
@@ -42,8 +42,8 @@ export function editProfile(profileInfo) {
       'Content-Type': config.headers['Content-Type']
     },
     body: JSON.stringify({
-      name: profileInfo.title.textContent,
-      about: profileInfo.description.textContent
+      name: dataProfile.title,
+      about: dataProfile.description
     })
   })
   .then(res => checkResponse(res))
@@ -67,13 +67,14 @@ export function postAddCard(dataCard) {
 
 // удаление карточки с сервера
 export function deleteCardServer (cardId) {
-  fetch (`${config.baseUrl}/cards/${cardId}`, {
-    method: 'DELETE',
+  return fetch (`${config.baseUrl}/cards/${cardId}`, {
+    method: 'DELETE', 
     headers: {
       authorization: config.headers.authorization,
       'Content-Type': config.headers['Content-Type']
     }    
   })
+  .then(res => checkResponse(res))
 }
 
 // добавление лайка на сервер
