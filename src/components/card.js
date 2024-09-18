@@ -14,24 +14,20 @@ export const deleteAndLikeCard = {
       deleteAndLikeCard.addLikeServer(dataCard._id)
         .then((data) => {
           likeScore.textContent = data.likes.length;
+          evt.target.classList.toggle('card__like-button_is-active');
         })
         .catch((err) => {
           console.log(err);
-        })
-        .finally(() => {
-          evt.target.classList.toggle('card__like-button_is-active');
         })
     } else {
       deleteAndLikeCard.deleteLikeServer(dataCard._id) 
         .then((data) => {
           likeScore.textContent = data.likes.length;
+          evt.target.classList.toggle('card__like-button_is-active');
         })  
         .catch((err) => {
           console.log(err);
-        })
-        .finally(() => {
-          evt.target.classList.toggle('card__like-button_is-active');
-        })    
+        })  
     }
   }
 
